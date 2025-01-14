@@ -1,37 +1,62 @@
-let count = 0;
-let timeLeft = 5;
-let timerInterval;
+let canPlay = true;
+let gameStarted = false;
+let scoreCount = 0;
 
-const counter = document.getElementById("counter");
-const incrementBtn = document.getElementById("incrementBtn");
-const timer = document.getElementById("timer");
+function handleGameButton() {
+  const scoreDisplay = document.getElementById("score");
+  const button = document.getElementById("button-clicker");
 
+  button.addEventListener("click", () => {
+    if (!gameStarted) {
+      gameStarted = true;
+      startTimer();
+    }
+
+    if (canPlay) {
+      scoreCount++;
+    }
+    scoreDisplay.innerHTML = scoreCount;
+  });
+}
 
 function startTimer() {
-  timerInterval = setInterval(() => {
-    if (timeLeft > 0) {
-      timer.textContent = `Time left: ${timeLeft} secondes`;
-      timeLeft--;
-    } else {
-      clearInterval(timerInterval);
-      timer.textContent = "Time!";
-      incrementBtn.disabled = true;
-    }
-  }, 1000);
+  const htmlTimer = document.getElementById("timer");
+  let timeLeft = 5;
+
+  for (let i = timeLeft; i >= 0; i--) {
+    setTimeout(() => {
+      htmlTimer.innerHTML = i;
+
+      if (i == 0) {
+        canPlay = false;
+      }
+    }, (timeLeft - i) * 1000);
+  }
 }
 
-incrementBtn.addEventListener("click", () => {
-  count++;
-  counter.textContent = count;
+function handleResetButton() {
+  const scoreDisplay = document.getElementById("score");
+  const resetButton = document.getElementById("button-reset");
+
+  resetButton.addEventListener("click", () => {
+    canPlay = true;
+    gameStarted = false;
+    scoreCount = 0;
+    scoreDisplay.innerHTML = scoreCount;
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const scoreDisplay = document.getElementById("score");
+
+  handleGameButton();
+  handleResetButton();
 });
 
-function init() {
-  incrementBtn.disabled = false;
-  timeLeft = 5;
-  count = 0;
-  counter.textContent = count;
-  startTimer();
-}
-
-
-window.onload = init;
+module.exports = {
+  handleGameButton,
+  handleResetButton,
+  canPlay,
+  gameStarted,
+  scoreCount,
+};
